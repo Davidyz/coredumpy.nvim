@@ -15,7 +15,11 @@ you can inspect a dump file in your favourite editor.
 {
   "Davidyz/coredumpy.nvim",
   cmd = { "Coredumpy" },
-  opts = {},
+  opts = {
+    host = "127.0.0.1",
+    port = 6742,
+    python = nil,
+  },
   dependencies = { "mfussenegger/nvim-dap" }
 }
 ```
@@ -24,14 +28,8 @@ you can inspect a dump file in your favourite editor.
 touch them. `python` would be the path to your interpreter, or a function that
 returns the path. 
 
-You'll also need to have [Coredumpy](https://github.com/gaogaotiantian/coredumpy) 
-installed on your system.
-
-> [!WARNING]
-> At the moment, this plugin (nvim-dap, to be specific) only works with 
-> [this commit](https://github.com/gaogaotiantian/coredumpy/commit/0f9164a67621517e3bd4c6169a3948fcc34beafb)
-> or later. You'll need to install coredumpy from source. This'll be resolved
-> once the upstream makes a new release.
+You'll also need to have [Coredumpy](https://github.com/gaogaotiantian/coredumpy) 0.4.1+
+installed on your system/in your venv.
 
 ### Working with Python Interpreters & Virtual Environments
 
@@ -60,7 +58,7 @@ venv-selector:
       python = require("venv-selector").python,
     },
   end,
-  dependencies = { "mfussenegger/nvim-dap" }
+  dependencies = { "mfussenegger/nvim-dap", "linux-cultist/venv-selector.nvim" }
 }
 ```
 

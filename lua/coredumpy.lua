@@ -6,11 +6,14 @@ local M = {}
 ---@field port integer?
 
 ---@type CoreDumpy.SetupOpts
-local config = { python = "python", host = "127.0.0.1", port = 6742 }
+local config = { python = nil, host = "127.0.0.1", port = 6742 }
 
 ---@param opts CoreDumpy.SetupOpts
 function M.setup(opts)
   config = vim.tbl_deep_extend("force", config, opts or {})
+  if vim.fn.executable("coredumpy") ~= 1 and config.python == nil then
+    config.python = "python"
+  end
 end
 
 ---@param dump_path string
@@ -28,23 +31,30 @@ function M.run(dump_path)
     error("nvim-dap is not found!", vim.log.levels.ERROR)
   end
 
-  ---@type string
-  local python
-  if type(config.python) == "function" then
-    python = config.python()
-  elseif type(config.python) == "string" then
-    python = tostring(config.python)
+  local executable
+  if config.python == nil and vim.fn.executable("coredumpy") == 1 then
+    executable = { command = "coredumpy", args = { "host" } }
   else
-    error("Failed to detect the python interpreter.", vim.log.levels.ERROR)
-  end
+    ---@type string
+    local python
+    if type(config.python) == "function" then
+      python = config.python()
+    elseif type(config.python) == "string" then
+      python = tostring(config.python)
+    else
+      error("Failed to detect the python interpreter.", vim.log.levels.ERROR)
+    end
 
-  assert(type(python) == "string")
-  ---@type dap.ServerAdapter
-  dap.adapters["coredumpy"] = {
+    assert(type(python) == "string")
     executable = {
       command = python,
       args = { "-m", "coredumpy", "host" },
-    },
+    }
+  end
+
+  ---@type dap.ServerAdapter
+  dap.adapters["coredumpy"] = {
+    executable = executable,
     host = config.host,
     name = string.format("Remote process at '%s@%d'", config.host, config.port),
     options = {

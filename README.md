@@ -15,21 +15,40 @@ you can inspect a dump file in your favourite editor.
 {
   "Davidyz/coredumpy.nvim",
   cmd = { "Coredumpy" },
-  opts = {
-    python = "python3",
-    host = "127.0.0.1",
-    port = 6742,
-  },
+  opts = {},
+  dependencies = { "mfussenegger/nvim-dap" }
 }
 ```
 
 `host` and `port` are hardcoded in coredumpy, so it's usually not necessary to
 touch them. `python` would be the path to your interpreter, or a function that
-returns the path. If you're using 
-[venv-selector.nvim](https://github.com/linux-cultist/venv-selector.nvim), you
-can use the following so that this plugin automatically pick up the virtual
-environment from venv-selector:
+returns the path. 
 
+You'll also need to have [Coredumpy](https://github.com/gaogaotiantian/coredumpy) 
+installed on your system.
+
+> [!WARNING]
+> At the moment, this plugin (nvim-dap, to be specific) only works with 
+> [this commit](https://github.com/gaogaotiantian/coredumpy/commit/0f9164a67621517e3bd4c6169a3948fcc34beafb)
+> or later. You'll need to install coredumpy from source. This'll be resolved
+> once the upstream makes a new release.
+
+### Working with Python Interpreters & Virtual Environments
+
+By default (when `opts.python` is set to `nil`), coredumpy.nvim tries to pick 
+up the `coredumpy` executable from `$PATH`. If it finds it, it'll be used to
+start the debugger. Otherwise, it'll fallback to using `python` in your current
+shell to start the debugger (equivalent to `python -m coredumpy host`). To
+use a different interpreter (for a virtual environment, for example), you can
+set `opts.python` to a string (path to the interpreter) or a function that
+returns a string (return the path to the interpreter). This enables the plugin
+to dynamically invoke the appropriate python interpreter.
+
+For example, if you're using 
+[venv-selector.nvim](https://github.com/linux-cultist/venv-selector.nvim) and
+installed coredumpy in your virtual environments, you can use the following 
+setup so that this plugin automatically pick up the virtual environment from 
+venv-selector:
 ```lua
 {
   "Davidyz/coredumpy.nvim",
@@ -45,14 +64,6 @@ environment from venv-selector:
 }
 ```
 
-You'll also need to have [Coredumpy](https://github.com/gaogaotiantian/coredumpy) 
-installed on your system.
-
-> [!WARNING]
-> At the moment, this plugin (nvim-dap, to be specific) only works with 
-> [this commit](https://github.com/gaogaotiantian/coredumpy/commit/0f9164a67621517e3bd4c6169a3948fcc34beafb)
-> or later. You'll need to install coredumpy from source. This'll be resolved
-> once the upstream makes a new release.
 
 ## Usage
 This plugin tries to replicate the behaviour of the 

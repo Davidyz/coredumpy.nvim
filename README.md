@@ -62,6 +62,9 @@ You'll be able to explore the variables in the failed test cases and perform
 certain actions in the REPL:
 
 ![](./images/nvim-dap-ui.png)
+> The UI is powered by [nvim-dap-ui](https://github.com/rcarriga/nvim-dap-ui).
+> [nvim-dap-view](https://github.com/igorlfs/nvim-dap-view) _should_ work too
+> but I haven't tested it because I don't use nvim nightly.
 
 > For instructions to use coredumpy, see the 
 > [upstream repo](https://github.com/gaogaotiantian/coredumpy) and 

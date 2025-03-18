@@ -24,7 +24,8 @@ you can inspect a dump file in your favourite editor.
 ```
 
 `host` and `port` are hardcoded in coredumpy, so it's usually not necessary to
-touch them. `python` would be the path to your interpreter. If you're using
+touch them. `python` would be the path to your interpreter, or a function that
+returns the path. If you're using 
 [venv-selector.nvim](https://github.com/linux-cultist/venv-selector.nvim), you
 can use the following so that this plugin automatically pick up the virtual
 environment from venv-selector:
@@ -35,7 +36,9 @@ environment from venv-selector:
   cmd = { "Coredumpy" },
   opts = function()
     return {
-      python = require("venv-selector").python(),
+      -- This will call require("venv-selector").python() when you start a
+      -- Coredumpy session.
+      python = require("venv-selector").python,
     },
   end,
   dependencies = { "mfussenegger/nvim-dap" }

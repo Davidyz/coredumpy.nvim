@@ -1,23 +1,12 @@
 local M = {}
 
 ---@class CoreDumpy.SetupOpts
----@field python string? Path to the python interpreter to run coredumpy with.
+---@field python string|(fun():string)|nil Path to the python interpreter to run coredumpy with.
 ---@field host string?
 ---@field port integer?
 
 ---@type CoreDumpy.SetupOpts
 local config = { python = "python", host = "127.0.0.1", port = 6742 }
-
-local function start_host()
-  assert(config.python ~= nil)
-  vim.system({ config.python, "-m", "coredumpy", "host" }, {}, function(out)
-    if out.code ~= 0 then
-      vim.notify(
-        ("Coredumpy exited with the following error:\n%s"):format(out.stderr or "")
-      )
-    end
-  end)
-end
 
 ---@param opts CoreDumpy.SetupOpts
 function M.setup(opts)
@@ -39,10 +28,21 @@ function M.run(dump_path)
     error("nvim-dap is not found!", vim.log.levels.ERROR)
   end
 
+  ---@type string
+  local python
+  if type(config.python) == "function" then
+    python = config.python()
+  elseif type(config.python) == "string" then
+    python = tostring(config.python)
+  else
+    error("Failed to detect the python interpreter.", vim.log.levels.ERROR)
+  end
+
+  assert(type(python) == "string")
   ---@type dap.ServerAdapter
   dap.adapters["coredumpy"] = {
     executable = {
-      command = config.python,
+      command = python,
       args = { "-m", "coredumpy", "host" },
     },
     host = config.host,

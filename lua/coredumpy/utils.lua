@@ -1,5 +1,19 @@
 local M = {}
 
+local au_group = vim.api.nvim_create_augroup("CoredumpyTmpFiles", {})
+
+local function register_delete(path)
+  vim.api.nvim_create_autocmd("VimLeave", {
+    group = au_group,
+    callback = function()
+      local file_stat = vim.uv.fs_stat(path)
+      if file_stat ~= nil and file_stat.type == "file" then
+        os.remove(path)
+      end
+    end,
+  })
+end
+
 ---@param url string
 ---@return {owner: string, repo: string, artifact_id: string}?
 function M.parse_artifact_url(url)
@@ -90,6 +104,8 @@ function M.get_artifact(url, fetch_timeout_ms)
       "Timed out when fetching remote coredumpy file.",
       vim.log.levels.ERROR
     )
+  else
+    register_delete(temp_path)
   end
   return temp_path
 end

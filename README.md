@@ -19,6 +19,7 @@ you can inspect a dump file in your favourite editor.
     host = "127.0.0.1",
     port = 6742,
     python = nil,
+    timeout_ms = 10000,
   },
   dependencies = { "mfussenegger/nvim-dap" }
 }
@@ -26,7 +27,8 @@ you can inspect a dump file in your favourite editor.
 
 `host` and `port` are hardcoded in coredumpy, so it's usually not necessary to
 touch them. `python` would be the path to your interpreter, or a function that
-returns the path. 
+returns the path. `timeout_ms` is the timeout for fetching dump file from Github
+Action.
 
 You'll also need to have [Coredumpy](https://github.com/gaogaotiantian/coredumpy) 0.4.1+
 installed on your system/in your venv.
@@ -64,14 +66,6 @@ venv-selector:
 
 
 ## Usage
-This plugin tries to replicate the behaviour of the 
-[VSCode counterpart](https://marketplace.visualstudio.com/items?itemName=gaogaotiantian.coredumpy-vscode). 
-It's an inspector of a dump file produced by [Coredumpy](https://github.com/gaogaotiantian/coredumpy).
-
-Suppose your dump file is located at `path/to/dump/file.dump`, you can use the
-following user command to initialise a debugging process: `:Coredumpy path/to/dump/file.dump`.
-You'll be able to explore the variables in the failed test cases and perform
-certain actions in the REPL:
 
 ![](./images/nvim-dap-ui.png)
 > The UI is powered by [nvim-dap-ui](https://github.com/rcarriga/nvim-dap-ui).
@@ -82,6 +76,39 @@ certain actions in the REPL:
 > [upstream repo](https://github.com/gaogaotiantian/coredumpy) and 
 > [this post](https://gaogaotiantian.medium.com/post-mortem-debugging-with-coredumpy-3b312f46354d)
 > from the creator of coredumpy.
+
+### Working with Local Dump Files
+This plugin tries to replicate the behaviour of the 
+[VSCode counterpart](https://marketplace.visualstudio.com/items?itemName=gaogaotiantian.coredumpy-vscode). 
+It's an inspector of a dump file produced by [Coredumpy](https://github.com/gaogaotiantian/coredumpy).
+
+Suppose your dump file is located at `path/to/dump/file.dump`, you can use the
+following user command to initialise a debugging process: 
+```
+:Coredumpy path/to/dump/file.dump
+```
+
+### Working with Remote Dump Files
+
+If you [deployed coredumpy on Github Action](https://github.com/gaogaotiantian/upload-coredumpy), 
+you'll be given URLs to download the artifacts. There will be both a standard
+Github URL that you can click to download the artifact from a browser:
+```
+https://github.com/<owner>/<repo>/actions/runs/<run_id>/artifacts/<artifact_id>
+```
+and a VSCode URL intended to use from VSCode:
+```
+vscode://gaogaotiantian.coredumpy-vscode/load-github-artifact?owner=<owner>&repo=<repo>&artifactId=<artifact_id>
+```
+If you have [`gh`](https://cli.github.com/) and `zcat` (usually part of the
+`unzip` command) in your `PATH`, this plugin will be able to handle either of
+the URL.
+Simply run:
+```
+:Coredumpy <url>
+```
+Coredumpy.nvim will parse the URL, download the artifact to a temporary
+directory and open it in nvim-dap, saving you the trouble of doing it manually.
 
 ## Credits
 - [@gaogaotiantian](https://github.com/gaogaotiantian) for creating

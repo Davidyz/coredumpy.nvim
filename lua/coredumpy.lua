@@ -4,9 +4,10 @@ local M = {}
 ---@field python string|(fun():string)|nil Path to the python interpreter to run coredumpy with.
 ---@field host string?
 ---@field port integer?
+---@field timeout_ms integer?
 
 ---@type CoreDumpy.SetupOpts
-local config = { python = nil, host = "127.0.0.1", port = 6742 }
+local config = { python = nil, host = "127.0.0.1", port = 6742, timeout_ms = 10000 }
 
 ---@param opts CoreDumpy.SetupOpts
 function M.setup(opts)
@@ -18,12 +19,8 @@ end
 
 ---@param dump_path string
 function M.run(dump_path)
-  if
-    type(dump_path) ~= "string"
-    or vim.uv.fs_stat(dump_path) == nil
-    or vim.uv.fs_stat(dump_path).type ~= "file"
-  then
-    error("dump_path must be a file!", vim.log.levels.ERROR)
+  if type(dump_path) ~= "string" then
+    error("dump_path must be a string!", vim.log.levels.ERROR)
     return
   end
   local ok, dap = pcall(require, "dap")
@@ -64,6 +61,15 @@ function M.run(dump_path)
     type = "server",
   }
 
+  local fs_stats = vim.uv.fs_stat(dump_path)
+  if fs_stats == nil or fs_stats.type ~= "file" then
+    local fetched_file =
+      require("coredumpy.utils").get_artifact(dump_path, config.timeout_ms)
+    if fetched_file == nil then
+      return
+    end
+    dump_path = fetched_file
+  end
   dap.run({
     type = "coredumpy",
     request = "launch",

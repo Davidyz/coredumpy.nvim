@@ -33,6 +33,11 @@ Action.
 You'll also need to have [Coredumpy](https://github.com/gaogaotiantian/coredumpy) 0.4.1+
 installed on your system/in your venv.
 
+If you want to directly work with dump files [uploaded to Github Actions
+artifacts](https://github.com/gaogaotiantian/upload-coredumpy), you'll also need
+to have [`gh`](https://cli.github.com/) installed and configured, as well as the
+`zcat` command, which is usually part of the `unzip` package.
+
 ### Working with Python Interpreters & Virtual Environments
 
 By default (when `opts.python` is set to `nil`), coredumpy.nvim tries to pick 
@@ -100,9 +105,7 @@ and a VSCode URL intended to use from VSCode:
 ```
 vscode://gaogaotiantian.coredumpy-vscode/load-github-artifact?owner=<owner>&repo=<repo>&artifactId=<artifact_id>
 ```
-If you have [`gh`](https://cli.github.com/) and `zcat` (usually part of the
-`unzip` command) in your `PATH`, this plugin will be able to handle either of
-the URL.
+This plugin is able to handle both of the URLs.
 Simply run:
 ```
 :Coredumpy <url>

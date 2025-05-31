@@ -74,7 +74,7 @@ function M.run(dump_path)
     type = "coredumpy",
     request = "launch",
     name = "Coredumpy",
-    program = dump_path,
+    program = vim.fs.abspath(vim.fs.normalize(dump_path)),
     pathMappings = {
       {
         localRoot = "${workspaceFolder}",
